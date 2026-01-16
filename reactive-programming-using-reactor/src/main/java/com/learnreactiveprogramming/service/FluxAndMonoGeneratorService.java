@@ -7,14 +7,17 @@ import java.util.List;
 
 public class FluxAndMonoGeneratorService {
 
+    //publisher
     public Flux<String> namesFlux(){
-
-        return Flux.fromIterable(List.of("alex","ben","chloe")); // this list may be from db or remote service call
+    // this list may be from db or remote service call
+        return Flux.fromIterable(List.of("alex","ben","chloe"))
+                .log(); // log each events between the publisher and subscribers
 
     }
 
     public Mono<String> namesMono(){
-        return Mono.just("alex");
+        return Mono.just("alex")
+                .log();
     }
 
     public static void main(String[] args) {
@@ -22,7 +25,7 @@ public class FluxAndMonoGeneratorService {
         FluxAndMonoGeneratorService fluxAndMonoGeneratorService = new FluxAndMonoGeneratorService();
 
         //only way to access this elements is to subscribe it, so we calling subscribe method
-
+        // subscriber as we subscribe to it the publisher
         fluxAndMonoGeneratorService.namesFlux()
                 .subscribe(name ->{
                     System.out.println("name is :"+name);
