@@ -26,6 +26,7 @@ public class FluxAndMonoGeneratorService {
 
         //only way to access this elements is to subscribe it, so we calling subscribe method
         // subscriber as we subscribe to it the publisher
+        // no events will flow until you call the subscribe method to it
         fluxAndMonoGeneratorService.namesFlux()
                 .subscribe(name ->{
                     System.out.println("name is :"+name);
