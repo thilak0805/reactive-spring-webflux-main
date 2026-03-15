@@ -36,4 +36,46 @@ class FluxAndMonoGeneratorServiceTest {
                 .verifyComplete();
 
     }
+
+    @Test
+    void namesFlux_immutability() {
+        //when
+        var namesFlux = fluxAndMonoGeneratorService.namesFlux_immutability();
+        //then
+        StepVerifier.create(namesFlux)
+               /* .expectNext("ALEX","BEN","CHLOE")*/
+                .expectNext("alex","ben","chloe")
+                .verifyComplete();
+
+    }
+
+    @Test
+    void testNamesFlux_map() {
+
+        //given
+        int stringLength = 3;
+
+        //when
+        var namesFlux = fluxAndMonoGeneratorService.namesFlux_map(stringLength);
+        //then
+        StepVerifier.create(namesFlux)
+                //.expectNext("ALEX","BEN","CHLOE")//test case failes because BEN string is only 3 we are expecting >3
+               // .expectNext("ALEX","CHLOE")
+                .expectNext("4-ALEX","5-CHLOE")
+                .verifyComplete();
+    }
+
+    @Test
+    void namesFlux_flatmap() {
+        //given
+        int stringLength = 3;
+
+        //when
+        var namesFlux = fluxAndMonoGeneratorService.namesFlux_flatmap(stringLength);
+
+        //then
+        StepVerifier.create(namesFlux)
+                .expectNext("A","L","E","X","C","H","L","O","E")
+                .verifyComplete();
+    }
 }
