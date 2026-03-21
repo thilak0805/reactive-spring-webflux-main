@@ -44,6 +44,8 @@ public class FluxAndMonoGeneratorService {
                 .log();
     }
 
+    // after introducing constant delay of 1000ms, the below method executed in 5second, wheareas the namesFlux_concatmap executes in 9ms
+    // its a tradeoff when to use flatmap and concatmap
     public Flux<String> namesFlux_flatmapAsync(int stringLength){
         //filter the string whose length is greater than 3
         return Flux.fromIterable(List.of("alex","ben","chloe"))
@@ -51,6 +53,19 @@ public class FluxAndMonoGeneratorService {
                 .filter(s->s.length() > stringLength) //
                 //ALEX => Flux(A,L,E,X)
                 .flatMap(s->splitStringWithDelay(s)) //it's getting the flux value and flatten it like A,L,E,X
+                .log();
+    }
+
+    //concatMap preserves ordering of the elements in reactive streams, best used for asynchronous operations
+    //overall time take to execute by concatMap is higher than flatMap operator
+    //eventhough the calls were made async, it waits for each and every element to complete and goes to next element
+    public Flux<String> namesFlux_concatmap(int stringLength){
+        //filter the string whose length is greater than 3
+        return Flux.fromIterable(List.of("alex","ben","chloe"))
+                .map(String::toUpperCase)
+                .filter(s->s.length() > stringLength) //
+                //ALEX => Flux(A,L,E,X)
+                .concatMap(s->splitStringWithDelay(s)) //it's getting the flux value and flatten it like A,L,E,X
                 .log();
     }
 
@@ -62,7 +77,8 @@ public class FluxAndMonoGeneratorService {
 
     public Flux<String> splitStringWithDelay(String name){
         var charArray = name.split("");
-        var delay = new Random().nextInt(10000);
+       // var delay = new Random().nextInt(10000);
+        var delay = 1000;
         return Flux.fromArray(charArray)
                 .delayElements(Duration.ofMillis(delay));
     }
