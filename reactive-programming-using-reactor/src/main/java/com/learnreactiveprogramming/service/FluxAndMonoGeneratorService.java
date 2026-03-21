@@ -3,7 +3,9 @@ package com.learnreactiveprogramming.service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 
 public class FluxAndMonoGeneratorService {
 
@@ -42,11 +44,28 @@ public class FluxAndMonoGeneratorService {
                 .log();
     }
 
+    public Flux<String> namesFlux_flatmapAsync(int stringLength){
+        //filter the string whose length is greater than 3
+        return Flux.fromIterable(List.of("alex","ben","chloe"))
+                .map(String::toUpperCase)
+                .filter(s->s.length() > stringLength) //
+                //ALEX => Flux(A,L,E,X)
+                .flatMap(s->splitStringWithDelay(s)) //it's getting the flux value and flatten it like A,L,E,X
+                .log();
+    }
+
     // the below method returns ALEX => Flux(A,L,E,X)
      public Flux<String> splitString(String name){
         var charArray = name.split("");
         return Flux.fromArray(charArray);
      }
+
+    public Flux<String> splitStringWithDelay(String name){
+        var charArray = name.split("");
+        var delay = new Random().nextInt(10000);
+        return Flux.fromArray(charArray)
+                .delayElements(Duration.ofMillis(delay));
+    }
 
     public Flux<String> namesFlux_immutability(){
         // this list may be from db or remote service call
