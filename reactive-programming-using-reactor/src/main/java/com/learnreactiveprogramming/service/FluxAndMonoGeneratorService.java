@@ -6,6 +6,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 public class FluxAndMonoGeneratorService {
 
@@ -97,6 +98,30 @@ public class FluxAndMonoGeneratorService {
                 .map(String::toUpperCase)
                 .filter(s->s.length() > stringLength)
                 .flatMapMany(this::splitString) ;// need to have Mono<List of A, L, E, x>
+    }
+
+    /**
+     *
+     *
+     * transform
+     * -used to transform from one type to another
+     * -Accepts Function functional interface
+     * -Function functional interface released as part of java8
+     * -input - Publisher(Flux or Mono)
+     * -Output - Publisher (Flux or Mono)
+     * --advantage we can extract the functionality and assign it to a variable and resuse the logic
+     * if you have similar kind of logic thats needed for the whole project
+     */
+    public Flux<String> namesFlux_transform(int stringLength){
+
+        Function<Flux<String>, Flux<String>> filterMap = name-> name.map(String::toUpperCase)
+                .filter(s->s.length() > stringLength);
+
+        //filter the string whose length is greater than 3
+        return Flux.fromIterable(List.of("alex","ben","chloe"))
+                .transform(filterMap)
+                .flatMap(s-> splitString(s)) //ALEX => Flux(A,L,E,X)
+                .log();
     }
     
     private Mono<List<String>> splitStringMono(String s){
