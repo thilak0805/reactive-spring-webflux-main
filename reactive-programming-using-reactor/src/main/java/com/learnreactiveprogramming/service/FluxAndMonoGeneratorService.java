@@ -69,6 +69,42 @@ public class FluxAndMonoGeneratorService {
                 .log();
     }
 
+    public Mono<String> namesMono_map_filter(int stringLength) {
+        return Mono.just("alex")
+                .map(String::toUpperCase)
+                .filter(s->s.length() > stringLength);
+    }
+
+    //======================when do you flatMap====================================
+    //use flatmap if the transformation involves making a REST API call or any kind of
+    //functionality that can be done asynchronously. or any function that return another Mono.
+
+    //flatMapMono=> Anytime you are using Mono and  if your  transformation if you are calling a function again returns another Mono,
+    // then in this case you will be using flatmap
+
+    public Mono<List<String>> namesMono_flatMap(int stringLength) {
+        return Mono.just("alex")
+                .map(String::toUpperCase)
+                .filter(s->s.length() > stringLength)
+                .flatMap(this::splitStringMono) ;// need to have Mono<List of A, L, E, x>
+    }
+
+    //-when mono transformation logic returns a flux then we use flatMapMany()
+    //flatMapMany(this::splitStringMono (this is mono)) so instead use flatMapMany(this::splitString) will only use the function which returns flux
+    //any time if we have a transformation that returns a flux in your mono pipeline then we use flatMapMany
+    public Flux<String> namesMono_flatMapMany(int stringLength) {
+        return Mono.just("alex")
+                .map(String::toUpperCase)
+                .filter(s->s.length() > stringLength)
+                .flatMapMany(this::splitString) ;// need to have Mono<List of A, L, E, x>
+    }
+    
+    private Mono<List<String>> splitStringMono(String s){
+        var charArray = s.split("");
+        var charList = List.of(charArray); //ALEX -> will be List of (A,L,E,X)
+        return Mono.just(charList);
+    }
+
     // the below method returns ALEX => Flux(A,L,E,X)
      public Flux<String> splitString(String name){
         var charArray = name.split("");
