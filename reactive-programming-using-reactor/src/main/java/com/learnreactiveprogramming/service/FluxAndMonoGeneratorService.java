@@ -117,12 +117,45 @@ public class FluxAndMonoGeneratorService {
         Function<Flux<String>, Flux<String>> filterMap = name-> name.map(String::toUpperCase)
                 .filter(s->s.length() > stringLength);
 
+       // Flux.empty();
+
         //filter the string whose length is greater than 3
         return Flux.fromIterable(List.of("alex","ben","chloe"))
                 .transform(filterMap)
                 .flatMap(s-> splitString(s)) //ALEX => Flux(A,L,E,X)
+                /*
+                * defaultIfEmpty
+---------------------------------
+1. it is not mandatory for a data source to emit the data always, for example when we give a call to db which will return flux or mono
+but for the request thats been made, there might be not data to return, in this case we will get onComplete() event there is no onNext() event/
+2. In this case we can use defaultIfEmpty or switchIfEmpty operator to provide default values.
+* */
+                .defaultIfEmpty("default")
                 .log();
     }
+
+    public Flux<String> namesFlux_transform_switchIfEmpty(int stringLength){
+
+        Function<Flux<String>, Flux<String>> filterMap =
+                name-> name.map(String::toUpperCase)
+                            .filter(s->s.length() > stringLength)
+                                 .flatMap(s-> splitString(s));
+
+        //create a publisher
+       var defaultFlux =  Flux.just("default")
+                .transform(filterMap) ; // this will return "D","E","F","A","U","L","T"
+                //transform allows you to reuse the functional interface that is alrady defined with the implemented functionality in it
+                // this is to make sure when you give a default value, that is also going to behave the same way as per the other implementation
+        //filter the string whose length is greater than 3
+        return Flux.fromIterable(List.of("alex","ben","chloe"))
+                .transform(filterMap)
+                //ALEX => Flux(A,L,E,X)
+                //switchIfEmpty accepts a publisher, the publisher could be flux or mono , in our case we are creating a Flux and it will be Flux("default") String
+                // and then we applying the same transform operation check lino.146 .transform(filterMap)
+                .switchIfEmpty(defaultFlux)
+                .log();
+    }
+
     
     private Mono<List<String>> splitStringMono(String s){
         var charArray = s.split("");
