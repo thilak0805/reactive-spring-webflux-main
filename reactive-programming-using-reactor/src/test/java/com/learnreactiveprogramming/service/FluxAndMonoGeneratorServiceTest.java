@@ -173,4 +173,41 @@ class FluxAndMonoGeneratorServiceTest {
                 .expectNext("D","E","F","A","U","L","T")
                 .verifyComplete();
     }
+
+    @Test
+    void explore_concat() {
+        //given
+
+        //when
+        var concatFlux = fluxAndMonoGeneratorService.explore_concat();
+        //then
+        StepVerifier.create(concatFlux)
+                .expectNext("A","B","C","D","E","F" )
+                .verifyComplete();
+
+    }
+
+    @Test
+    void explore_concatWith() {
+        //given
+        //when
+        var concatWithFlux = fluxAndMonoGeneratorService.explore_concatWith();
+        //then
+        StepVerifier.create(concatWithFlux)
+                .expectNext("A","B","C","D","E","F")
+                .verifyComplete();
+    }
+
+    @Test
+    void explore_concatWith_mono() {
+        //given
+        //when
+        var concatWithMono = fluxAndMonoGeneratorService.explore_concatWith_mono();
+
+        //then
+        StepVerifier.create(concatWithMono)
+                .expectNext("A","B")
+                .verifyComplete();
+
+    }
 }

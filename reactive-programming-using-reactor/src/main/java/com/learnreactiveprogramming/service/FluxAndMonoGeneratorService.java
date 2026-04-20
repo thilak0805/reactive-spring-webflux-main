@@ -208,4 +208,44 @@ but for the request thats been made, there might be not data to return, in this 
 
     }
 
+
+    //concat and concatwith()
+    /*
+    *  Concat and ConcatWith()
+ -----------------------------
+ used to combine two reactive streams into one
+
+ app-> api1 => flux(a,b,c)
+ app -> api2 => flux(d,e,f)
+ we need to combine these two flux and produce one output =>flux(a,b,c,d,e,f)
+ -concatination of reactive streams happens in sequence
+  - first one is subscribed first and completes.
+  -second reactive stream will wait for oncompletion signal from the first one , then second one is subscribed after and completes.
+ - concat() static method in flux
+ - concatwith() instance method with flux and mono
+ - both of these above operators work similarly
+
+ * */
+
+    public Flux<String> explore_concat(){
+        var abcFlux = Flux.just("A","B","C");
+        var defFlux = Flux.just("D","E","F");
+        return Flux.concat(abcFlux, defFlux).log();
+    }
+
+    public Flux<String> explore_concatWith(){
+        var abcFlux = Flux.just("A","B","C");
+        var defFlux = Flux.just("D","E","F");
+        //concatination happening with the instance method
+        return abcFlux.concatWith(defFlux).log();
+    }
+
+    public Flux<String> explore_concatWith_mono(){
+        var aMono = Mono.just("A");
+        var bMono = Flux.just("B");
+        //concatination happening with the instance method
+        //it returns a Flux with Flux of A,B
+        return aMono.concatWith(bMono).log();
+    }
+
 }
