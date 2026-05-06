@@ -248,4 +248,37 @@ but for the request thats been made, there might be not data to return, in this 
         return aMono.concatWith(bMono).log();
     }
 
+// ouput will be in interleave fashion like 'A','D','B','E','C','F'
+    public Flux<String> explore_merge(){
+        var abcFlux = Flux.just("A","B","C")
+                .delayElements(Duration.ofMillis(100)); //at the 100 ms, we have 'A' emitted, similarly at 200ms we have 'B' emitted
+        var defFlux = Flux.just("D","E","F")
+                .delayElements(Duration.ofMillis(125)); // at the 125 ms we have 'D' emitted. similary at 250 second we have 'E' emitted
+        return Flux.merge(abcFlux, defFlux).log();
+    }
+
+    public Flux<String> explore_mergeWith(){
+        var abcFlux = Flux.just("A","B","C")
+                .delayElements(Duration.ofMillis(100)); //at the 100 ms, we have 'A' emitted, similarly at 200ms we have 'B' emitted
+        var defFlux = Flux.just("D","E","F")
+                .delayElements(Duration.ofMillis(125)); // at the 125 ms we have 'D' emitted. similary at 250 second we have 'E' emitted
+       // return Flux.merge(abcFlux, defFlux).log();
+        return abcFlux.mergeWith(defFlux).log();
+    }
+
+    public Flux<String> explore_mergeWithmono(){
+        var aMono = Mono.just("A");
+        var bMono = Mono.just("B");
+        return aMono.mergeWith(bMono).log(); //A,B
+    }
+
+    public Flux<String> explore_mergeSequential(){
+        var abcFlux = Flux.just("A","B","C")
+                .delayElements(Duration.ofMillis(100)); //at the 100 ms, we have 'A' emitted, similarly at 200ms we have 'B' emitted
+        var defFlux = Flux.just("D","E","F")
+                .delayElements(Duration.ofMillis(125)); // at the 125 ms we have 'D' emitted. similary at 250 second we have 'E' emitted
+         return Flux.mergeSequential(abcFlux, defFlux).log(); // output is A,B,C,D,E,F
+    }
+
+
 }
