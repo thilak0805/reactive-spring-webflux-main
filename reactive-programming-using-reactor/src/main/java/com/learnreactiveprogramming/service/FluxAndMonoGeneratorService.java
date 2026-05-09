@@ -297,6 +297,17 @@ but for the request thats been made, there might be not data to return, in this 
                 (first, second)->first+second).log() ;// output is AD,BE,CF
     }
 
+    /*
+    * zip()
+- static method thats part of flux.
+- can be used to merge up to 2 to 8 publishers (Flux or Mono) in to one.
+zipWith()
+- This is an instance method thats part of the Flux and Mono.
+- Used to merge two Publishers into one.
+-The publishers in zip and zipWith are subscribed eagerly.
+- Waits for all the publishers involved in the transformation to emit one element and then move on to the next element.
+- It continues until one of the publishers involved sends an onComplete event.
+    * */
     public Flux<String> explore_zip_1(){
         var abcFlux = Flux.just("A","B","C");
         var defFlux = Flux.just("D","E","F");
