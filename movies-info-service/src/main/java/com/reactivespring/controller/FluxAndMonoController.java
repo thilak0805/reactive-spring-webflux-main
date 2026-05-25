@@ -33,6 +33,16 @@ public class FluxAndMonoController {
 
     // for every second the below api is continously sents data to the client.
     // the below MediaType.TEXT_EVENT_STREAM_VALUE -going to instructs this endpoint to produce a stream of data to the client
+    /*
+    * Streaming endpoint is a kind of endpoint which continously sends updates to the clients as the new data arrive.
+The concept is similar to server sent events(SSE)
+easy to implement in spring webflux
+This kind of api's are used in stock tickers, realtime updates of sports events.
+
+
+the threads from where we get the events are coming from is parallel thread,once the api got exected it starts with reactive thread [ctor-http-nio-1]
+and once the interval starts published , a thread switch happend in between and goes for non blocking thread. A data handling and the actual request handling
+is handled by separate thread altogether. And server thread is released to separate thread.*/
     // after execting the api, the output will be printed incrementally, starts with 1,2..
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Long> stream(){
