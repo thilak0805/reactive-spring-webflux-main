@@ -1,9 +1,12 @@
 package com.reactivespring.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @RestController
 public class FluxAndMonoController {
@@ -25,6 +28,15 @@ public class FluxAndMonoController {
     @GetMapping("/mono")
     public Mono<String> helloWorldMono(){
         return Mono.just("hello world")
+                .log();
+    }
+
+    // for every second the below api is continously sents data to the client.
+    // the below MediaType.TEXT_EVENT_STREAM_VALUE -going to instructs this endpoint to produce a stream of data to the client
+    // after execting the api, the output will be printed incrementally, starts with 1,2..
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<Long> stream(){
+        return Flux.interval(Duration.ofSeconds(1))
                 .log();
     }
 
